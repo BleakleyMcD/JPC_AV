@@ -1,22 +1,25 @@
 import os
+import sys
 from ruamel.yaml import YAML
 
 yaml = YAML()
 yaml.preserve_quotes = True
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 
 class ConfigPath:
     def __init__(self):
-        # Get the absolute path of the script file
-        script_path = os.path.dirname(os.path.abspath(__file__))
-
-        # Extract the directory containing the script file
-        self.root_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
-        self.config_dir = os.path.join(self.root_dir, 'config')
+        self.config_dir = resource_path("config")
         self.config_yml = os.path.join(self.config_dir, 'config.yaml')
-
-        # logger.debug(f'config.yaml sourced from {self.config_yml}')
-
         self.reload()
 
     def reload(self):
@@ -26,16 +29,8 @@ class ConfigPath:
 
 class CommandConfig:
     def __init__(self):
-        # Get the absolute path of the script file
-        script_path = os.path.dirname(os.path.abspath(__file__))
-
-        # Extract the directory containing the script file
-        self.root_dir = os.path.dirname(os.path.dirname(os.path.dirname(script_path)))
-        self.config_dir = os.path.join(self.root_dir, 'config')
+        self.config_dir = resource_path("config")
         self.command_yml = os.path.join(self.config_dir, 'command_config.yaml')
-
-        # logger.debug(f'command_config.yaml sourced from {self.command_yml}')
-
         self.reload()
 
     def reload(self):
